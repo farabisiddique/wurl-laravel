@@ -1,0 +1,115 @@
+    @media (max-width: 576px) {
+      .mainCard {
+        padding: 20px 10px 30px 10px;
+        max-width: 100%;
+        border-radius: 18px;
+      }
+      h1, h2, h3, h4 {
+        font-size: 1.2rem;
+      }
+      .nav-link-custom {
+        font-size: 1rem;
+      }
+      
+      .btn-qr-actions {
+        margin-top: 15px;
+      }
+      .wurlbg-big,
+      .wurlbg-small,
+      .wurlbg-blue-small {
+        display: none !important;
+      }
+      .container.mt-5 {
+        margin-top: 1rem !important;
+      }
+      .formInput, .outputlink {
+        font-size: 1rem;
+        padding: 8px 10px;
+      }
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+    }
+    .bg-custom {
+      background: linear-gradient(90deg, #8B4513, #DAA520);
+      color: white;
+    }
+    .wurlbg-big {
+      top: 25%;
+    }
+    .wurlbg-small {
+      bottom: 15%;
+      width: 10%;
+    }
+    .wurlbg-blue-small {
+      position: absolute;  
+      left: 1%;
+      bottom: 0%;
+      width: 12%;
+    }
+    .mainNavbar{
+      background-color: rgba(0, 0, 0, 0.4);
+    }
+    .navbar-toggler{
+      background-color: #ffffff;
+    }
+    
+
+    .buttonHere {
+      background-color: #FFC107;
+      border-color: #FFC107;
+      color: black;
+      border-radius: 20px;
+    }
+    .buttonHere:hover {
+      background-color: #FFCA28;
+      border-color: #FFCA28;
+    }
+
+    .midcontainer{
+      min-height: 400px;;
+    }
+
+    .mainCard {
+        border: none;
+        border-radius: 36px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        max-width: 585px;
+        margin: 0 auto;
+        padding: 40px 20px 40px 20px;
+    }
+    .nav-link-custom {
+      font-size: 1.25rem;
+    }
+    .formInput{
+        border-radius: 20px;
+        background-color: rgba(0, 0, 0, 0.1);
+    }
+    .copy-btn {
+      background-color: rgba(0, 0, 0, 0.1);
+      border: none;
+      border-radius: 20px;
+      color: #000;
+      cursor: pointer;
+      padding: 0 10px;
+      font-weight: bold;
+      font-size: 20px;
+    }
+    .qrCodeSection{
+      display: none;
+    }
+    .qr-code-img {
+      max-width: 25%;
+      height: auto;
+    }
+    .btn-qr-actions {
+      margin-left: 25px;
+    }
+    .modal-content {
+      background-color: rgba(255, 255, 255, 0.9);
+    }
+    .modal-body img {
+      max-width: 100%;
+    }
+    
