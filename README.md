@@ -35,7 +35,7 @@ cp .env.example .env        # Windows (PowerShell): Copy-Item .env.example .env
 php artisan key:generate
 
 # 4. Configure the database in .env, then run migrations
-php artisan migrate
+php artisan migrate 
 
 # 5. Build front-end assets
 npm run build
