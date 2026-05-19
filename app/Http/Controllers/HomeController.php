@@ -25,4 +25,16 @@ class HomeController extends Controller
     {
         return view('home.privacy-policy');
     }
+
+    public function shorten(Request $request)
+    {
+        
+        // $wholerequest = $request->input('longLinkInput');
+        // return response()->json($wholerequest);
+        return response()->json(['success' => 'Form submitted successfully!']);
+
+        
+
+        
+    }
 }

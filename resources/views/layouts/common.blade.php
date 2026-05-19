@@ -8,6 +8,7 @@
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
         <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+        
     </head>
     <body class="bg-custom text-white">
         <img src="{{ asset('img/wurl-bg-white.png') }}" class="wurlbg-big position-absolute start-0 w-25" alt="Background Image" style="z-index: -1; opacity: 0.1;">
@@ -64,6 +65,7 @@
         </footer>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        {{-- <script src="{{ asset('js/mainformsubmit.js') }}"></script> --}}
        
     </body>
 </html>
