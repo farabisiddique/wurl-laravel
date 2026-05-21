@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('short_links', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('domain_id')->constrained()->onDelete('cascade');
             $table->string('link_custom_text')->unique();
             $table->date('expiration_date');
             $table->timestamps();

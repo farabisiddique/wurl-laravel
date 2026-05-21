@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Domain;
+use App\Models\ShortLink;
 use App\Models\IPAddress;
 
 class HomeController extends Controller
@@ -29,12 +30,19 @@ class HomeController extends Controller
     public function shorten(Request $request)
     {
         
-        // $wholerequest = $request->input('longLinkInput');
+        $longLinkInput = $request->input('longLinkInput');
+        $domainID = $request->input('domainSelect'); 
+        $customTextInput = $request->input('customTextInput');
+        $availablity = checkAvailability($customTextInput);
+        
+
         // return response()->json($wholerequest);
-        return response()->json(['success' => 'Form submitted successfully!']);
+        return response()->json(['success' => $availablity]);
+    
+    }
 
-        
-
-        
+    public function checkAvailability($customText){
+        $available = ShortLink::where('link_custom_text', $customText)->exists();
+        return $available;
     }
 }
