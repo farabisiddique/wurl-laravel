@@ -42,11 +42,14 @@ class HomeController extends Controller
     }
 
     public function checkAvailability($customText){
-        try {
-            $available = ShortLink::where('link_custom_text', $customText)->exists();
-            return $available;
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
+
+        $available = ShortLink::where('link_custom_text', $customText)->exists();
+        return $available;
+
+    }
+
+    public function checkAllowedText($customText){
+        $unallowed_strings = array('blog','blogs','shorten');
+       
     }
 }
