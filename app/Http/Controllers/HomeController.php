@@ -33,7 +33,7 @@ class HomeController extends Controller
         $longLinkInput = $request->input('longLinkInput');
         $domainID = $request->input('domainSelect'); 
         $customTextInput = $request->input('customTextInput');
-        $availablity = checkAvailability($customTextInput);
+        $availablity = $this->checkAvailability($customTextInput);
         
 
         // return response()->json($wholerequest);
@@ -42,7 +42,11 @@ class HomeController extends Controller
     }
 
     public function checkAvailability($customText){
-        $available = ShortLink::where('link_custom_text', $customText)->exists();
-        return $available;
+        try {
+            $available = ShortLink::where('link_custom_text', $customText)->exists();
+            return $available;
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 }

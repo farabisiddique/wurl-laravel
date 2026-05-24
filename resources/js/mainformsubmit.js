@@ -1,6 +1,5 @@
 $('#mainForm').on('submit', function(e) {
     e.preventDefault();
-    console.log("Form submitted");
 
     $.ajax({
         url: "/shorten",
