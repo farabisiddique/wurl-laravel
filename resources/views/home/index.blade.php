@@ -18,7 +18,7 @@
         <h4>You can customize your link</h4>
         <div class="input-group mb-3">
             <span class="input-group-text">https://</span>
-            <select class="form-select formInput" aria-label="Domain selection" id="domainSelect" name="domainSelect" onchange="checkCustomText()">
+            <select class="form-select formInput" aria-label="Domain selection" id="domainSelect" name="domainSelect" >
                 @foreach ($domains as $domain)
                     <option value="{{ $domain->id }}">{{ $domain->domain_name   }}</option>
                 @endforeach

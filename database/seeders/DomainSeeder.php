@@ -17,6 +17,7 @@ class DomainSeeder extends Seeder
         Domain::truncate();
         $domains = [
             ['domain_name' => 'wurl.io', 'is_active' => true],
+            ['domain_name' => 'wurl.com', 'is_active' => true],
         ];
 
         foreach ($domains as $domain) {

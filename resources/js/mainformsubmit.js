@@ -8,7 +8,7 @@ $('#mainForm').on('submit', function(e) {
         processData: false,
         contentType: false,
         success: function(response) {
-            console.log(response.success);
+            console.log(response.message);
         },
         error: function(xhr) {
             // Handle validation errors or server issues
