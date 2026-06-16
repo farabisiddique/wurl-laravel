@@ -14,7 +14,6 @@ class DomainSeeder extends Seeder
     public function run(): void
     {   
         //first truncate the table to avoid duplicate entries
-        Domain::truncate();
         $domains = [
             ['domain_name' => 'wurl.io', 'is_active' => true],
             ['domain_name' => 'wurl.com', 'is_active' => true],

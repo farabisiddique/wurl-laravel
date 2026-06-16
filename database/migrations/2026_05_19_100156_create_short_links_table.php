@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('domain_id')->constrained()->onDelete('cascade');
             $table->string('link_custom_text')->unique();
             $table->date('expiration_date');
+            $table->integer('single_multi')->default(0);
             $table->timestamps();
         });
     }

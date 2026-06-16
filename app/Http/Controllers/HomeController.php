@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Domain;
-use App\Models\IPAddress;
 use App\Models\ShortLink;
 use Illuminate\Http\Request;
 
@@ -14,13 +13,9 @@ class HomeController extends Controller
         $domains = Domain::where('is_active', true)->get();
         $ip = $request->ip();
         $user_agent = $request->userAgent();
-        $ipAddressAdded = IPAddress::firstOrCreate([
-            'ip_address' => $ip,
-            'user_agent' => $user_agent,
-        ]);
-        $ipid = $ipAddressAdded->id;
+        
 
-        return view('home.index', compact('domains', 'ipid'));
+        return view('home.index', compact('domains'));
     }
 
     public function privacyPolicy()
@@ -50,10 +45,14 @@ class HomeController extends Controller
             }
         }
 
+        $expirationDate = Carbon::now()->addYears(1); // Set expiration date to 1 year from now
+
         ShortLink::create([
-            'long_link' => $longLinkInput,
+            
             'domain_id' => $domainID,
             'link_custom_text' => $customTextInput,
+            'single_multi' => 0,
+            'expiration_date' => $expirationDate,
         ]);
 
         // return response()->json($wholerequest);

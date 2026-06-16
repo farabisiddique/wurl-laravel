@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('long_link');
             $table->foreignId('short_link_id')->constrained()->onDelete('cascade');
-            $table->foreignId('i_p_address_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }
