@@ -6,6 +6,7 @@ use App\Models\Domain;
 use App\Models\ShortLink;
 use App\Models\Link;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class HomeController extends Controller
 {
@@ -49,10 +50,11 @@ class HomeController extends Controller
 
         $expirationDate = Carbon::now()->addYears(1); // Set expiration date to 1 year from now
 
-        ShortLink::create([
+        $create_short_link = ShortLink::create([
             
             'domain_id' => $domainID,
             'link_custom_text' => $customTextInput,
+            'single_multi' => 0,
             'expiration_date' => $expiration_date,
         ]);
 
@@ -62,9 +64,6 @@ class HomeController extends Controller
         $add_long_link = Link::create([
             'long_link' => $longLinkInput,
             'short_link_id' => $short_link_id,
-            'i_p_address_id' => 1,
-            'single_multi' => 0,
-            'expiration_date' => $expirationDate,
         ]);
 
         // return response()->json($wholerequest);
