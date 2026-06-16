@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Domain;
 use App\Models\ShortLink;
+use App\Models\Link;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -32,6 +33,7 @@ class HomeController extends Controller
 
         $allowedLink = $this->checkAllowedLink($longLinkInput);
         $allowedText = $this->checkAllowedText($customTextInput);
+        $expiration_date = now()->addYear()->toDateTimeString();
 
         if (! $allowedLink) {
             return response()->json(['success' => false, 'message' => 'Invalid long link. Please enter a valid URL.']);
@@ -51,6 +53,16 @@ class HomeController extends Controller
             
             'domain_id' => $domainID,
             'link_custom_text' => $customTextInput,
+            'expiration_date' => $expiration_date,
+        ]);
+
+        $short_link_id = $create_short_link->id;
+
+
+        $add_long_link = Link::create([
+            'long_link' => $longLinkInput,
+            'short_link_id' => $short_link_id,
+            'i_p_address_id' => 1,
             'single_multi' => 0,
             'expiration_date' => $expirationDate,
         ]);
@@ -77,14 +89,7 @@ class HomeController extends Controller
         }
     }
 
-    public function checkAvailability($customText, $domainID)
-    {
-
-        $available = ShortLink::where('link_custom_text', $customText)->where('domain_id', $domainID)->exists();
-
-        return $available;
-
-    }
+    
 
     public function checkAllowedText($customText)
     {
@@ -101,6 +106,15 @@ class HomeController extends Controller
         } else {
             return false; // Does not match allowed pattern
         }
+
+    }
+
+    public function checkAvailability($customText, $domainID)
+    {
+
+        $available = ShortLink::where('link_custom_text', $customText)->where('domain_id', $domainID)->exists();
+
+        return $available;
 
     }
 }
