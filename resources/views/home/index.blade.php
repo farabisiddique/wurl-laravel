@@ -28,12 +28,15 @@
         </div>
         <p id="customTextAvailability"></p>
         <button type="submit" class="btn buttonHere w-100" id="getLnkBtn" name="submit">Get Your Link and QR Code</button>
+        <p class="text-danger mt-2" id="submissionError"></p>
         <div class="input-group mt-3">
         <input type="text" class="form-control formInput outputlink" placeholder="Your shortened link will appear here" id="shortLinkOutput" readonly>
-        <button class="copy-btn" onclick="navigator.clipboard.writeText(document.querySelector('#shortLinkOutput').value)">
+        <button class="copy-btn" type="button" id="copyBtn">
           <i class="bi bi-copy"></i>
         </button>
+         
       </div>
+      <p class="text-success mt-2" id="copySuccessMessage"></p> 
       <p class='mt-3 text-danger' id='expiration_date'></p>
       <div class="justify-content-center mt-3 qrCodeSection">
         <img src="" class="qr-code-img" alt="QR Code" id="qrCodeImg">
