@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 use App\Models\Domain;
+use Illuminate\Database\Seeder;
 
 class DomainSeeder extends Seeder
 {
@@ -12,16 +11,14 @@ class DomainSeeder extends Seeder
      * Run the database seeds.
      */
     public function run(): void
-    {   
-        //first truncate the table to avoid duplicate entries
+    {
         $domains = [
             ['domain_name' => 'wurl.io', 'is_active' => true],
             ['domain_name' => 'wurl.com', 'is_active' => true],
         ];
 
         foreach ($domains as $domain) {
-            Domain::create($domain);
-        }    
-    
+            Domain::firstOrCreate(['domain_name' => $domain['domain_name']], $domain);
+        }
     }
 }

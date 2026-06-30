@@ -3,10 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Domain;
-use App\Models\ShortLink;
 use App\Models\Link;
+use App\Models\ShortLink;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
 
 class HomeController extends Controller
 {
@@ -15,7 +14,6 @@ class HomeController extends Controller
         $domains = Domain::where('is_active', true)->get();
         $ip = $request->ip();
         $user_agent = $request->userAgent();
-        
 
         return view('home.index', compact('domains'));
     }
@@ -27,64 +25,61 @@ class HomeController extends Controller
 
     public function shorten(Request $request)
     {
-
-        $longLinkInput = $request->input('longLinkInput');
+        $links = array_values(array_filter($request->input('links', []), fn ($link) => ! empty(trim($link))));
         $domainID = $request->input('domainSelect');
         $customTextInput = $request->input('customTextInput');
 
-        if(!$customTextInput) {
+        if (empty($links)) {
+            return response()->json(['success' => false, 'message' => 'Please enter at least one link.']);
+        }
+
+        if (! $customTextInput) {
             $customTextInput = $this->createRandomCustomText($request);
-
         }
 
-        $allowedLink = $this->checkAllowedLink($longLinkInput);
-        $allowedText = $this->checkAllowedText($customTextInput);
-        $expiration_date = now()->addYear()->toDateTimeString();
-
-        if (! $allowedLink) {
-            return response()->json(['success' => false, 'message' => 'Invalid long link. Please enter a valid URL.']);
-        }
-        if (! $allowedText) {
-            return response()->json(['success' => false, 'message' => 'Custom text is not allowed. Please choose a different one.']);
-        } else {
-            $availablity = $this->checkAvailability($customTextInput, $domainID);
-            if (!$availablity) {
-                return response()->json(['success' => false, 'message' => 'Custom text is already taken. Please choose a different one.']);
+        foreach ($links as $link) {
+            if (! $this->checkAllowedLink($link)) {
+                return response()->json(['success' => false, 'message' => 'Invalid link: '.htmlspecialchars($link, ENT_QUOTES).'. Please enter a valid URL.']);
             }
         }
 
-        $expirationDate = Carbon::now()->addYears(1); // Set expiration date to 1 year from now
+        if (! $this->checkAllowedText($customTextInput)) {
+            return response()->json(['success' => false, 'message' => 'Custom text is not allowed. Please choose a different one.']);
+        }
 
-        $create_short_link = ShortLink::create([
-            
+        if (! $this->checkAvailability($customTextInput)) {
+            return response()->json(['success' => false, 'message' => 'Custom text is already taken. Please choose a different one.']);
+        }
+
+        $expirationDate = now()->addYear();
+        $singleMulti = count($links) === 1 ? 1 : 2;
+
+        $shortLink = ShortLink::create([
             'domain_id' => $domainID,
             'link_custom_text' => $customTextInput,
-            // 'single_multi' => 1,
-            'expiration_date' => $expiration_date,
+            'single_multi' => $singleMulti,
+            'expiration_date' => $expirationDate->toDateString(),
         ]);
 
-        $short_link_id = $create_short_link->id;
+        foreach ($links as $longLink) {
+            Link::create([
+                'long_link' => $longLink,
+                'short_link_id' => $shortLink->id,
+            ]);
+        }
 
+        $domain = Domain::find($domainID);
+        $finalShortLink = 'https://'.$domain->domain_name.'/'.$customTextInput;
+        $qrCodeUrl = 'https://api.qrserver.com/v1/create-qr-code/?data='.urlencode($finalShortLink).'&size=200x200';
 
-
-        $add_long_link = Link::create([
-            'long_link' => $longLinkInput,
-            'short_link_id' => $short_link_id,
-        ]);
-
-        $final_short_link = 'https://' . Domain::find(ShortLink::find($short_link_id)->domain_id)->domain_name . '/' . ShortLink::find($short_link_id)->link_custom_text;
-        $formattedExpirationDate = date('d F, Y', strtotime($expirationDate));
-
-        $qrCodeUrl = 'https://api.qrserver.com/v1/create-qr-code/?data=' . urlencode($final_short_link) . '&size=200x200';
-        $response = [
+        return response()->json([
             'success' => true,
-            'shortened_url' => $final_short_link,
-            'expirationDate' => $formattedExpirationDate,
+            'shortened_url' => $finalShortLink,
+            'expirationDate' => $expirationDate->format('d F, Y'),
             'qrCodeUrl' => $qrCodeUrl,
-            'message' => 'Short link and QR code generated successfully.'
-        ];
-        return response()->json($response);
-
+            'link_type' => $singleMulti === 1 ? 'single' : 'multi',
+            'message' => 'Short link and QR code generated successfully.',
+        ]);
     }
 
     public function checkAllowedLink($longlink)
@@ -104,8 +99,6 @@ class HomeController extends Controller
         }
     }
 
-    
-
     public function checkAllowedText($customText)
     {
         $unallowed_strings = ['blog', 'blogs', 'shorten'];
@@ -124,26 +117,16 @@ class HomeController extends Controller
 
     }
 
-    public function checkAvailability($customText, $domainID)
+    public function checkAvailability(string $customText): bool
     {
-
-        $available = ShortLink::where('link_custom_text', $customText)->where('domain_id', $domainID)->doesntExist();
-
-        return $available;
-
+        return ShortLink::where('link_custom_text', $customText)->doesntExist();
     }
 
-    public function createRandomCustomText(Request $request){
-        // Implementation for creating random custom text
-
-        // Generate an 8-character random string and ensure it's valid and available.
-        // The loop repeats until both conditions are satisfied:
-        //  - checkAllowedText($randomText) returns true (matches allowed pattern and not containing forbidden substrings)
-        //  - checkAvailability($randomText, $domainId) returns false (i.e. the text is NOT already taken for the selected domain)
-        $domainId = $request->input('domainSelect');
+    public function createRandomCustomText(Request $request): string
+    {
         do {
             $randomText = substr(str_shuffle('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'), 0, 8);
-        } while (!$this->checkAllowedText($randomText) || !$this->checkAvailability($randomText, $domainId));
+        } while (! $this->checkAllowedText($randomText) || ! $this->checkAvailability($randomText));
 
         return $randomText;
     }

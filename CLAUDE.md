@@ -188,3 +188,127 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 - To filter on a particular test name: `php artisan test --compact --filter=testName` (recommended after making a change to a related file).
 
 </laravel-boost-guidelines>
+
+# Wurl — Project Overview
+
+## What This App Does
+
+Wurl (`wurl.io`) is a URL shortening service. Users paste a long URL, pick a domain and optional custom slug, and get back a short link plus a QR code. No authentication is required.
+
+## Features
+
+| Feature | Status | Notes |
+|---|---|---|
+| URL shortening | Done | POST `/shorten` (AJAX) |
+| Custom slug | Done | Alphanumeric only, forbidden words blocked |
+| Auto-generated slug | Done | 8-char random shuffle, collision-safe loop |
+| Domain selection | Done | Seeded: `wurl.io`, `wurl.com` |
+| Link expiration | Done | Hard-coded 1 year from creation |
+| QR code generation | Done | External API: `api.qrserver.com` |
+| QR code download | Done | Client-side via JS |
+| QR code magnify | Done | Bootstrap modal (`#magnifyModal`) |
+| Copy to clipboard | Done | `navigator.clipboard` |
+| Privacy policy | Done | GET `/privacy-policy` |
+| Authentication | Not started | No auth routes or middleware |
+| Single/multi-use links | Done | `single_multi=1` → countdown redirect; `single_multi=2` → landing page |
+| Analytics / click tracking | Not started | |
+| Link redirect | Done | `GET /{customText}` → `RedirectController@handle` |
+
+## Architecture
+
+### Stack
+
+- **Backend**: Laravel 12, PHP 8.2, SQLite
+- **Frontend**: Bootstrap 5.3 (CDN), Bootstrap Icons, jQuery 3.6 (CDN), vanilla JS
+- **Build tool**: Vite 7 + `laravel-vite-plugin` (used only for `mainformsubmit.js`)
+- **CSS**: TailwindCSS v4 installed but Bootstrap is the active styling framework
+- **QR codes**: External API (`api.qrserver.com`) — no local library
+
+### Directory Layout
+
+```
+app/
+  Http/Controllers/
+    HomeController.php      # All business logic (shorten, validate, availability)
+  Models/
+    Domain.php              # hasMany ShortLink
+    ShortLink.php           # belongsTo Domain, hasMany Link
+    Link.php                # belongsTo ShortLink (stores long URL)
+    User.php                # Standard Laravel user (unused — no auth yet)
+  Providers/
+    AppServiceProvider.php
+
+database/
+  migrations/
+    create_domains_table
+    create_short_links_table
+    create_links_table
+  seeders/
+    DomainSeeder.php        # Seeds wurl.io and wurl.com
+
+resources/
+  views/
+    layouts/
+      common.blade.php      # Base layout: navbar, footer, social links
+      magnifyqr.blade.php   # QR magnify Bootstrap modal (included in index)
+    home/
+      index.blade.php       # Main page: URL form + QR output
+      privacy-policy.blade.php
+  js/
+    mainformsubmit.js       # AJAX submit, copy to clipboard, QR display
+    app.js / bootstrap.js   # Laravel defaults
+
+routes/
+  web.php                   # 3 routes: GET /, GET /privacy-policy, POST /shorten
+```
+
+### Database Schema
+
+```
+domains
+  id, domain_name (unique), is_active (bool), timestamps
+
+short_links
+  id, domain_id (FK→domains), link_custom_text (unique),
+  expiration_date (date), single_multi (int, default 1), timestamps
+
+links
+  id, long_link (string), short_link_id (FK→short_links cascade), timestamps
+
+users
+  (standard Laravel — not used yet)
+```
+
+**Relationship:** `Domain` → has many `ShortLink` → has many `Link` (long URL store).  
+The `Link` table is separate to support future multi-destination links per slug.
+
+### Known Issues / Tech Debt
+
+- No factories for `Domain`, `ShortLink`, or `Link`.
+- Bootstrap is loaded from CDN; TailwindCSS is installed but not actively used (Bootstrap handles all styling).
+- `GET /{customText}` does a global slug lookup (not domain-scoped), matching the DB's global unique constraint on `link_custom_text`.
+
+## Routes
+
+| Method | URI | Name | Controller@action |
+|---|---|---|---|
+| GET | `/` | `index` | `HomeController@index` |
+| GET | `/privacy-policy` | `privacy-policy` | `HomeController@privacyPolicy` |
+| POST | `/shorten` | `shorten` | `HomeController@shorten` |
+| GET | `/{customText}` | `redirect` | `RedirectController@handle` |
+
+## Key Business Rules (in HomeController)
+
+- **Blocked long-link domains**: `wurl.io`, `www.wurl.io` and `http(s)://` variants — prevents self-referential links.
+- **Slug validation regex**: `^(?=.*[a-zA-Z])[a-zA-Z0-9]+$` — must contain at least one letter.
+- **Blocked slugs**: `blog`, `blogs`, `shorten`.
+- **Availability check**: slug + domain combination must be unique in `short_links`.
+- **Expiration**: always 1 year from creation (`now()->addYear()`).
+- **QR code**: assembled as `https://api.qrserver.com/v1/create-qr-code/?data={encoded_url}&size=200x200`.
+
+## Social / Contact
+
+- Twitter/X: `@wurlio25`
+- Email: `info@wurl.io`
+- Facebook, Instagram, LinkedIn, Pinterest all linked in footer.
+

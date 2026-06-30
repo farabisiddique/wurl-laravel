@@ -3,20 +3,27 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOneOrMany;
-use App\Models\Domain;
-use App\Models\Link;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ShortLink extends Model
-{   
-    protected $fillable = ['link_custom_text', 'domain_id','expiration_date','single_multi'];
-    public function domain(): HasOne
+{
+    protected $fillable = ['link_custom_text', 'domain_id', 'expiration_date', 'single_multi'];
+
+    protected function casts(): array
     {
-        return $this->hasOne(Domain::class);
+        return [
+            'expiration_date' => 'date',
+        ];
     }
-    public function link(): HasOneOrMany
+
+    public function domain(): BelongsTo
+    {
+        return $this->belongsTo(Domain::class);
+    }
+
+    public function links(): HasMany
     {
         return $this->hasMany(Link::class);
     }
-
 }
