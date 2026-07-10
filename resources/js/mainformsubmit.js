@@ -1,9 +1,19 @@
-// Add another link row
+// Tab switch: enable inputs in active pane, disable in inactive pane
+// so FormData only picks up the active tab's links
+$('#linkModeTabs button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+    const $activePane = $($(e.target).attr('data-bs-target'));
+    const $prevPane = $($(e.relatedTarget).attr('data-bs-target'));
+    $activePane.find('input[name="links[]"]').prop('disabled', false);
+    $prevPane.find('input[name="links[]"]').prop('disabled', true);
+});
+
+// Add another link row (minimum 2 always present)
 $('#addLinkBtn').on('click', function () {
+    const count = $('#linksContainer .link-row').length + 1;
     const newRow = `
         <div class="link-row mb-2">
             <div class="input-group">
-                <input type="text" class="form-control formInput" placeholder="Paste another long link here." name="links[]">
+                <input type="text" class="form-control formInput" placeholder="Paste link ${count} here." name="links[]">
                 <button type="button" class="btn btn-outline-danger remove-link-btn px-3">
                     <i class="bi bi-x"></i>
                 </button>
@@ -11,22 +21,14 @@ $('#addLinkBtn').on('click', function () {
         </div>
     `;
     $('#linksContainer').append(newRow);
-    updateMultiLinkBadge();
 });
 
-// Remove a link row
+// Remove a link row — minimum 2 rows enforced
 $(document).on('click', '.remove-link-btn', function () {
-    $(this).closest('.link-row').remove();
-    updateMultiLinkBadge();
-});
-
-function updateMultiLinkBadge() {
-    if ($('.link-row').length > 1) {
-        $('#multiLinkBadge').fadeIn(200);
-    } else {
-        $('#multiLinkBadge').fadeOut(200);
+    if ($('#linksContainer .link-row').length > 2) {
+        $(this).closest('.link-row').remove();
     }
-}
+});
 
 // Form submission
 $('#mainForm').on('submit', function (e) {

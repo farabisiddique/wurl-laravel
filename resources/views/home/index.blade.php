@@ -10,23 +10,45 @@
       <form id="mainForm" class="mb-4">
         @csrf
 
-        {{-- Dynamic link inputs --}}
-        <div id="linksContainer">
-          <div class="link-row mb-2">
-            <div class="input-group">
-              <input type="text" class="form-control formInput" placeholder="Paste your long link here."
-                  name="links[]" required>
-            </div>
-          </div>
-        </div>
+        {{-- Link mode tabs --}}
+        <ul class="nav nav-tabs mb-0" id="linkModeTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="single-tab" data-bs-toggle="tab"
+                    data-bs-target="#singleLinkPane" type="button" role="tab"
+                    aria-controls="singleLinkPane" aria-selected="true">
+              <i class="bi bi-link-45deg me-1"></i> Single Link
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="multi-tab" data-bs-toggle="tab"
+                    data-bs-target="#multiLinkPane" type="button" role="tab"
+                    aria-controls="multiLinkPane" aria-selected="false">
+              <i class="bi bi-collection me-1"></i> Multiple Links
+            </button>
+          </li>
+        </ul>
 
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <button type="button" id="addLinkBtn" class="btn btn-sm btn-outline-light">
-            <i class="bi bi-plus-circle me-1"></i> Add Another Link
-          </button>
-          <span id="multiLinkBadge" class="badge rounded-pill text-bg-warning" style="display:none;">
-            <i class="bi bi-collection me-1"></i> Multi-Link Mode
-          </span>
+        <div class="tab-content link-tab-content mb-3" id="linkModeContent">
+          {{-- Single Link Pane --}}
+          <div class="tab-pane fade show active" id="singleLinkPane" role="tabpanel" aria-labelledby="single-tab">
+            <input type="text" class="form-control formInput" placeholder="Paste your long link here."
+                   name="links[]" required>
+          </div>
+
+          {{-- Multiple Links Pane --}}
+          <div class="tab-pane fade" id="multiLinkPane" role="tabpanel" aria-labelledby="multi-tab">
+            <div id="linksContainer">
+              <div class="link-row mb-2">
+                <input type="text" class="form-control formInput" placeholder="Paste link 1 here." name="links[]" disabled>
+              </div>
+              <div class="link-row mb-2">
+                <input type="text" class="form-control formInput" placeholder="Paste link 2 here." name="links[]" disabled>
+              </div>
+            </div>
+            <button type="button" id="addLinkBtn" class="btn btn-sm buttonHere mt-1">
+              <i class="bi bi-plus-circle me-1"></i> Add Another Link
+            </button>
+          </div>
         </div>
 
         <p class="text-danger" id="longlinkError"></p>

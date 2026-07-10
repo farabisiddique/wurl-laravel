@@ -112,4 +112,27 @@
     .modal-body img {
       max-width: 100%;
     }
-    
+
+    /* Link mode tabs */
+    #linkModeTabs .nav-link {
+      color: #555;
+      border-radius: 12px 12px 0 0;
+      font-weight: 500;
+    }
+    #linkModeTabs .nav-link.active {
+      background-color: #FFC107;
+      border-color: #dee2e6 #dee2e6 #fff;
+      color: #000;
+      font-weight: 600;
+    }
+    #linkModeTabs .nav-link:hover:not(.active) {
+      color: #222;
+      border-color: #dee2e6 #dee2e6 transparent;
+    }
+    .link-tab-content {
+      border: 1px solid #dee2e6;
+      border-top: none;
+      border-radius: 0 0 12px 12px;
+      padding: 16px;
+    }
+
